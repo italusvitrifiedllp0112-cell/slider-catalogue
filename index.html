@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Single Page Flip Book</title>
+
+<style>
+body {
+  margin: 0;
+  background: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+ 
+}
+
+/* Book */
+.book {
+  width: 900px;
+  height: 550px;
+  display: flex;
+  perspective: 2500px;
+ 
+}
+
+/* Pages */
+.page {
+  width: 90%;
+  height: 61%;
+  position: relative;
+  overflow: hidden;
+  background: black;
+   border: 1px solid white;   /* 🔥 border */
+}
+
+/* Shadow center line */
+.page::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 5px;
+  height: 100%;
+  background: rgba(0,0,0,0.1);
+}
+
+/* Flip page */
+.flip-page {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transform-origin: left;
+  transform-style: preserve-3d;
+  transition: transform 1s ease;
+}
+
+/* Front & Back */
+.front, .back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+}
+
+.front img, .back img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Back side */
+.back {
+  transform: rotateY(180deg);
+}
+
+/* Flip effect */
+.flip {
+  transform: rotateY(-180deg);
+}
+
+/* Left page */
+.left img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Controls */
+.controls {
+  position: absolute;
+  bottom: 70px;
+  width: 900px;
+  display: flex;
+  justify-content: space-between;
+}
+
+button {
+  padding: 10px 25px;
+  background: black;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  border: 2px solid white;   /* 🔥 border */
+
+}
+</style>
+</head>
+
+<body>
+
+<div class="book">
+
+  <!-- Left Page -->
+  <div class="page left">
+    <img id="leftImg">
+  </div>
+
+  <!-- Right Page -->
+  <div class="page">
+    <div class="flip-page" id="flipPage">
+      <div class="front"><img id="rightFront"></div>
+      <div class="back"><img id="rightBack"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="controls">
+  <button onclick="prev()">⬅ Prev</button>
+  <button onclick="next()">Next ➡</button>
+</div>
+
+<!-- 🔊 SOUND -->
+<audio id="flipSound" src="flippage tone.mp3"></audio>
+
+<script>
+
+let pages = [
+  "images/1.jpg","images/2.png","images/3.png","images/4.png",
+  "images/5.png","images/6.png","images/7.png","images/8.png",
+  "images/9.png","images/10.png","images/11.png","images/12.png",
+  "images/13.jpg","images/14.jpg"
+];
+
+let current = 0;
+
+function playSound() {
+  let sound = document.getElementById("flipSound");
+  sound.currentTime = 0;
+  sound.play();
+}
+
+function loadPages() {
+  document.getElementById("leftImg").src = pages[current] || "";
+  document.getElementById("rightFront").src = pages[current+1] || "";
+  document.getElementById("rightBack").src = pages[current+2] || "";
+
+  // 👉 click events yaha lagao
+  addClickEvents();
+}
+
+function addClickEvents() {
+  document.getElementById("leftImg").onclick = function() {
+    next();
+  };
+
+  document.getElementById("rightFront").onclick = function() {
+    next();
+  };
+}
+
+
+
+function next() {
+  if (current + 2 < pages.length) {
+
+    playSound();
+
+    let flip = document.getElementById("flipPage");
+    flip.classList.add("flip");
+
+    setTimeout(() => {
+      current += 2;   // 🔥 पहले current++ था
+      flip.classList.remove("flip");
+      loadPages();
+    }, 1000);
+  }
+}
+
+function prev() {
+  if (current - 2 >= 0) {
+
+    playSound();
+
+    current -= 2;   // 🔥 पहले current-- था
+    loadPages();
+  }
+}
+
+
+
+loadPages();
+
+</script>
+
+</body>
+</html>
